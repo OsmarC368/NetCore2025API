@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Core.Entities;
 using Core.Interfaces.Services;
+using System.Security.Claims;
+using Microsoft.Extensions.Configuration.UserSecrets;
 
 namespace Web.Controllers
 {
@@ -23,6 +25,41 @@ namespace Web.Controllers
         {
             var ubicaciones = await _userService.GetAll();
             return Ok(ubicaciones);
+        }
+
+
+        [HttpGet("Get-ID")]
+        // [Authorize]
+        public ActionResult<string> GetID()
+        {
+            var name = User?.Identity?.Name;
+            return Ok(new {name});
+        }
+
+        [HttpPut]
+        public async Task<ActionResult<User>> Update([FromBody] User user)
+        {
+            try
+            {
+                // var identity = HttpContext.User.Identity as ClaimsIdentity;
+
+                // if (identity != null)
+                // {
+                //     IEnumerable<Claim> claims = identity.Claims;
+                //     var userId = claims.First(x => x.Type == "id").Value;
+                //     Console.WriteLine(userId);
+                // }
+
+                var context = HttpContext;
+                var userId = (int?)context.Items["id"];
+
+                var updatedUser = await _userService.Update((int)userId, user);
+                return Ok(updatedUser);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost("Login")]

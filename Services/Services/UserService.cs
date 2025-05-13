@@ -54,6 +54,10 @@ namespace Services.Services
         {
             var LoginUser = await _unitOfWork.UserRepository.GetUser(user.UserName, HashPassword(user.Password));
 
+            List<Claim> claims = new List<Claim>{
+                new Claim(ClaimTypes.Name, user.UserName)
+            };
+
             if(LoginUser == null)
             {
                 return string.Empty;
@@ -69,10 +73,11 @@ namespace Services.Services
                     new Claim("id", LoginUser.Id.ToString())
                 }),
                 Expires = DateTime.UtcNow.AddMinutes(30),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
-            string userToken = tokenHandler.WriteToken(token);
+            string userToken = tokenHandler.WriteToken(token);        
+
             return userToken;
         }
 
@@ -89,6 +94,21 @@ namespace Services.Services
             await _unitOfWork.CommitAsync();
 
             return newUser;
+        }
+
+        public async Task<User> Update(int userId, User updateUser)
+        {
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(userId);
+            if (user == null)
+            {
+                throw new Exception("El usuario no existe");
+            }
+
+            user.UserName = updateUser.UserName;
+            user.Password = HashPassword(updateUser.Password);
+
+            await _unitOfWork.CommitAsync();
+            return user;
         }
 
         public async Task<User> GetById(int id)

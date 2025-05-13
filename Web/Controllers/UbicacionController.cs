@@ -45,7 +45,6 @@ namespace Web.Controllers
 
         [HttpPost]
         [Authorize]
-
         public async Task<ActionResult<Ubicacion>> Post([FromBody] Ubicacion ubicacion)
         {
             try

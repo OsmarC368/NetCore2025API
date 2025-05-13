@@ -10,6 +10,7 @@ namespace Core.Interfaces.Services
     {
         Task<string> Login(User user);
         Task<User> Register(User user);
+        Task<User> Update(int id, User user);
         Task<User> GetById(int id);
         Task<IEnumerable<User>> GetAll();
     }

@@ -3,6 +3,7 @@ using Core.Interfaces.Services;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 
 namespace Web.Helpers
@@ -51,10 +52,13 @@ namespace Web.Helpers
 
                 var jwtToken = (JwtSecurityToken)validatedToken;
                 var userId = int.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
+                
 
                 //Attach user to context on successful JWT validation
                 //llamada a la base de datos
                 context.Items["ok"] = true;
+                context.Items["UserId"] = userId;
+                
             }
             catch
             {
