@@ -41,17 +41,9 @@ namespace Web.Controllers
         {
             try
             {
-                // var identity = HttpContext.User.Identity as ClaimsIdentity;
-
-                // if (identity != null)
-                // {
-                //     IEnumerable<Claim> claims = identity.Claims;
-                //     var userId = claims.First(x => x.Type == "id").Value;
-                //     Console.WriteLine(userId);
-                // }
 
                 var context = HttpContext;
-                var userId = (int?)context.Items["id"];
+                var userId = (int?)context.Items["UserId"];
 
                 var updatedUser = await _userService.Update((int)userId, user);
                 return Ok(updatedUser);
